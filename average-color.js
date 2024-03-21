@@ -19,17 +19,22 @@ function addImage(file) {
   img.onload = function() {
     var rgb = getAverageColor(img);
     var hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+
+    // Modify HSL: Add 10% to saturation (S) and subtract 10% from brightness (B)
+    hsl.s = Math.min(hsl.s + 0.1, 1); // Ensure S is not more than 100%
+    hsl.l = Math.max(hsl.l - 0.1, 0); // Ensure L is not less than 0%
+
     var rgbStr = 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
     var hexStr = '#' + ('0'+rgb.r.toString(16)).slice(-2) + ('0'+rgb.g.toString(16)).slice(-2) + ('0'+rgb.b.toString(16)).slice(-2);
     var hslStr = 'hsl(' + Math.round(hsl.h * 360) + ', ' + Math.round(hsl.s * 100) + '%, ' + Math.round(hsl.l * 100) + '%)';
 
     var box = element.querySelector('.box');
-    box.style.backgroundColor = rgbStr;
+    box.style.backgroundColor = hslStr; // Use the modified HSL for background color
 
     element.querySelector('.rgb').textContent = rgbStr;
     element.querySelector('.hex').textContent = hexStr;
-    element.querySelector('.hsl').textContent = hslStr;
-  };
+    element.querySelector('.hsl').textContent = hslStr; // Display the modified HSL values
+};
 
   document.getElementById('images').appendChild(element);
 }
