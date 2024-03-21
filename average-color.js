@@ -19,22 +19,19 @@ function addImage(file) {
   img.onload = function() {
     var rgb = getAverageColor(img);
     var hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-
-    // Modify HSL: Add 10% to saturation (S) and subtract 10% from brightness (B)
-    hsl.s = Math.min(hsl.s + 0.1, 1); // Ensure S is not more than 100%
-    hsl.l = Math.max(hsl.l - 0.1, 0); // Ensure L is not less than 0%
+    var modifiedHSL = modifyHSL(hsl);
 
     var rgbStr = 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
     var hexStr = '#' + ('0'+rgb.r.toString(16)).slice(-2) + ('0'+rgb.g.toString(16)).slice(-2) + ('0'+rgb.b.toString(16)).slice(-2);
-    var hslStr = 'hsl(' + Math.round(hsl.h * 360) + ', ' + Math.round(hsl.s * 100) + '%, ' + Math.round(hsl.l * 100) + '%)';
+    var hslStr = 'hsl(' + Math.round(modifiedHSL.h * 360) + ', ' + Math.round(modifiedHSL.s * 100) + '%, ' + Math.round(modifiedHSL.l * 100) + '%)';
 
     var box = element.querySelector('.box');
-    box.style.backgroundColor = hslStr; // Use the modified HSL for background color
+    box.style.backgroundColor = hslStr;
 
     element.querySelector('.rgb').textContent = rgbStr;
     element.querySelector('.hex').textContent = hexStr;
-    element.querySelector('.hsl').textContent = hslStr; // Display the modified HSL values
-};
+    element.querySelector('.hsl').textContent = hslStr;
+  };
 
   document.getElementById('images').appendChild(element);
 }
@@ -87,6 +84,14 @@ function rgbToHsl(r, g, b) {
   return { h: h, s: s, l: l };
 }
 
+function modifyHSL(hsl) {
+  return {
+    h: hsl.h, // Hue remains unchanged
+    s: Math.min(hsl.s + 0.1, 1), // Add 10% to saturation, cap at 100%
+    l: Math.max(hsl.l - 0.1, 0)  // Subtract 10% from brightness, floor at 0%
+  };
+}
+
 function handleImages(files) {
   document.getElementById('images').innerHTML = '';
 
@@ -117,3 +122,4 @@ document.ondrop = function(event) {
     upload.click();
   };
 })();
+
